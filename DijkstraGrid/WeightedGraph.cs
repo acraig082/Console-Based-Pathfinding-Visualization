@@ -11,6 +11,7 @@ namespace DijkstraGrid
         List<WeightedEdge<T>> edges;
         List<Vertex<T>> vertices;
         public List<WeightedEdge<T>> Edges { get { return edges; } }
+        Random rnd = new Random();
 
         public WeightedGraph(List<Vertex<T>> vertices, List<WeightedEdge<T>> edges)
         {
@@ -127,6 +128,10 @@ namespace DijkstraGrid
                         if (newCost < neighborCost)
                         {
                             neighbor.Cost = newCost;
+                            if (parentMap.ContainsKey(neighbor))
+                            {
+                                parentMap.Remove(neighbor);
+                            }
                             parentMap.Add(neighbor, current);
                             int priority = newCost + Heuristic(neighbor, end);
                             priorityQueue.Enqueue(neighbor, priority);
@@ -140,10 +145,10 @@ namespace DijkstraGrid
 
         public int Heuristic(Vertex<T> vertexA, Vertex<T> vertexB)
         {
-            int x1 = vertexA.Location.getX();
-            int y1 = vertexA.Location.getY();
-            int x2 = vertexB.Location.getX();
-            int y2 = vertexB.Location.getY();
+            int x1 = vertexA.Location.Item1;
+            int y1 = vertexA.Location.Item2;
+            int x2 = vertexB.Location.Item1;
+            int y2 = vertexB.Location.Item2;
 
             int x = Math.Abs(x1 - x2);
             int y = Math.Abs(y1 - y2);
@@ -152,7 +157,10 @@ namespace DijkstraGrid
             double ysquared = y * y;
 
             double r = Math.Sqrt(xsquared + ysquared);
-            return Convert.ToInt32(r);
+            int distance = Convert.ToInt32(r);
+
+            distance += rnd.Next(-4, 4);
+            return distance;
         }
 
         public void InitializeCosts(Vertex<T> start)

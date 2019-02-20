@@ -19,7 +19,7 @@ namespace DijkstraGrid
 
             List<Vertex<char>> _vertices = new List<Vertex<char>>();
             List<WeightedEdge<char>> _edges = new List<WeightedEdge<char>>();
-            Dictionary<Location, Vertex<char>> _dicV = new Dictionary<Location, Vertex<char>>();
+            Dictionary<(int, int), Vertex<char>> _dicV = new Dictionary<(int, int), Vertex<char>>();
 
             // add vertices
             for (int j = 0; j < height; j++)
@@ -29,9 +29,9 @@ namespace DijkstraGrid
                     if (level._map[i, j] == ' ')
                     {
                         Vertex<char> tempV = new Vertex<char>(level._map[i, j]);
-                        Location l = new Location(i, j);
+                        (int, int) l = (i, j);
                         tempV.Location = l;
-                        _dicV.Add(l, tempV);
+                        _dicV.Add((i, j), tempV);
                     }
                 }
             }
@@ -41,50 +41,56 @@ namespace DijkstraGrid
             {
                 for (int i = 0; i < width; i++)
                 {
-                    Location temp = new Location(i, j);
+                    (int, int) temp = (i, j);
 
-                    //left
-                    if (i - 1 >= 0 && level._map[i - 1, j] == ' ')
+                    Console.Write(level._map[i, j]);
+
+                    if (level._map[i, j] == ' ')
                     {
-                        Location left = new Location(i - 1, j);
-                        WeightedEdge<char> e = new WeightedEdge<char>(_dicV[temp], _dicV[left], 1);
-                        _edges.Add(e);
-                        _dicV[temp].AddEdge(e);
-                        
+                        //left
+                        if (i - 1 >= 0 && level._map[i - 1, j] == ' ')
+                        {
+                            (int, int) left = (i - 1, j);
+                            WeightedEdge<char> e = new WeightedEdge<char>(_dicV[temp], _dicV[left], 1);
+                            _edges.Add(e);
+                            _dicV[temp].AddEdge(e);
+
+
+                        }
+                        //right
+                        if (i + 1 < width && level._map[i + 1, j] == ' ')
+                        {
+                            (int, int) right = (i + 1, j);
+                            WeightedEdge<char> e = new WeightedEdge<char>(_dicV[temp], _dicV[right], 1);
+                            _edges.Add(e);
+                            _dicV[temp].AddEdge(e);
+                        }
+                        //down
+                        if (j - 1 >= 0 && level._map[i, j - 1] == ' ')
+                        {
+                            (int, int) down = (i, j - 1);
+                            WeightedEdge<char> e = new WeightedEdge<char>(_dicV[temp], _dicV[down], 1);
+                            _edges.Add(e);
+                            _dicV[temp].AddEdge(e);
+                        }
+                        //up
+                        if (j + 1 < height && level._map[i, j + 1] == ' ')
+                        {
+                            (int, int) up = (i, j + 1);
+                            WeightedEdge<char> e = new WeightedEdge<char>(_dicV[temp], _dicV[up], 1);
+                            _edges.Add(e);
+                            _dicV[temp].AddEdge(e);
+                        }
+
+                        _vertices.Add(_dicV[temp]);
 
                     }
-                    //right
-                    if (i + 1 <= width && level._map[i + 1, j] == ' ')
-                    {
-                        Location right = new Location(i + 1, j);
-                        WeightedEdge<char> e = new WeightedEdge<char>(_dicV[temp], _dicV[right], 1);
-                        _edges.Add(e);
-                        _dicV[temp].AddEdge(e);
-                    }
-                    //down
-                    if (j - 1 >= 0 && level._map[i, j - 1] == ' ')
-                    {
-                        Location down = new Location(i, j - 1);
-                        WeightedEdge<char> e = new WeightedEdge<char>(_dicV[temp], _dicV[down], 1);
-                        _edges.Add(e);
-                        _dicV[temp].AddEdge(e);
-                    }
-                    //up
-                    if (j + 1 <= height && level._map[i, j + 1] == ' ')
-                    {
-                        Location up = new Location(i, j + 1);
-                        WeightedEdge<char> e = new WeightedEdge<char>(_dicV[temp], _dicV[up], 1);
-                        _edges.Add(e);
-                        _dicV[temp].AddEdge(e);
-                    }
-
-                    _vertices.Add(_dicV[temp]);
-
                 }
+                Console.WriteLine();
             }
 
-            Location start = new Location(0,0);
-            Location end = new Location(width - 1, height - 1);
+            (int, int) start = (0,0);
+            (int, int) end = (width - 1, height - 1);
             string algorithm = "Dijkstra";
 
             WeightedGraph<char> graph = new WeightedGraph<char>(_vertices, _edges);
@@ -92,12 +98,14 @@ namespace DijkstraGrid
 
             foreach(Vertex<char> v in path)
             {
-                Location l = v.Location;
-                level._map[l.getX(), l.getY()] = '*';
+                (int, int) l = v.Location;
+                level._map[l.Item1, l.Item2] = '*';
             }
 
             level.displayLevel();
 
+
+            Console.WriteLine("\nAlgorithm: " + algorithm + "\nHeuristic: random(-1, 1)");
             Console.Read();
         }
 

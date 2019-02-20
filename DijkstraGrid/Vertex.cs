@@ -14,7 +14,7 @@ namespace DijkstraGrid
 
         public List<Vertex<T>> Neighbors { get { return neighbors; } }
         public List<WeightedEdge<T>> Edges { get { return edges; } }
-        public Location Location { get; set; }
+        public (int, int) Location { get; set; }
         public T Value { get { return value; } set { this.value = value; } }
         public bool IsVisited { get; set; }
         public int NeighborsCount { get { return neighbors.Count; } }
