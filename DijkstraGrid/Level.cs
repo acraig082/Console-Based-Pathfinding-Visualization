@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DijkstraGrid
 {
-    
+
     public class Level
     {
         public int _width;
@@ -32,7 +32,7 @@ namespace DijkstraGrid
                     _map[i, j] = ' ';
                 }
             }
-            
+
             addRandomRooms();
         }
 
@@ -79,7 +79,7 @@ namespace DijkstraGrid
                 Console.Write("\n");
                 for (int i = 0; i < _width; i++)
                 {
-                    Console.Write(_map[i,j]);
+                    Console.Write(_map[i, j]);
                 }
             }
         }

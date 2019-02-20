@@ -61,7 +61,8 @@ namespace DijkstraGrid
 
             while (priorityQueue.Count() > 0)
             {
-                current = priorityQueue.Dequeue();
+
+                 current = (Vertex<T>)priorityQueue.Dequeue();
 
                 if (!current.IsVisited)
                 {
@@ -76,14 +77,14 @@ namespace DijkstraGrid
                     {
                         Vertex<T> neighbor = edge.End;
 
-                        double newCost = current.Cost + edge.Weight;
-                        double neighborCost = neighbor.Cost;
+                        int newCost = current.Cost + edge.Weight;
+                        int neighborCost = neighbor.Cost;
 
                         if (newCost < neighborCost)
                         {
                             neighbor.Cost = newCost;
                             parentMap.Add(neighbor, current);
-                            double priority = newCost;
+                            int priority = newCost;
                             priorityQueue.Enqueue(neighbor, priority);
                         }
                     }
@@ -103,9 +104,9 @@ namespace DijkstraGrid
 
             Vertex<T> current;
 
-            while (priorityQueue.Count > 0)
+            while (priorityQueue.Count() > 0)
             {
-                current = priorityQueue.Dequeue();
+                current = (Vertex<T>)priorityQueue.Dequeue();
 
                 if (!current.IsVisited)
                 {
@@ -120,14 +121,14 @@ namespace DijkstraGrid
                     {
                         Vertex<T> neighbor = edge.End;
 
-                        double newCost = current.Cost + edge.Weight;
-                        double neighborCost = neighbor.Cost;
+                        int newCost = current.Cost + edge.Weight;
+                        int neighborCost = neighbor.Cost;
 
                         if (newCost < neighborCost)
                         {
                             neighbor.Cost = newCost;
                             parentMap.Add(neighbor, current);
-                            double priority = newCost + Heuristic(neighbor, end);
+                            int priority = newCost + Heuristic(neighbor, end);
                             priorityQueue.Enqueue(neighbor, priority);
                         }
                     }
@@ -137,9 +138,21 @@ namespace DijkstraGrid
             return path;
         }
 
-        public double Heuristic(Vertex<T> vertexA, Vertex<T> vertexB)
+        public int Heuristic(Vertex<T> vertexA, Vertex<T> vertexB)
         {
-            return vertexA.Location.DistanceTo(vertexB.Location);
+            int x1 = vertexA.Location.getX();
+            int y1 = vertexA.Location.getY();
+            int x2 = vertexB.Location.getX();
+            int y2 = vertexB.Location.getY();
+
+            int x = Math.Abs(x1 - x2);
+            int y = Math.Abs(y1 - y2);
+
+            double xsquared = x * x;
+            double ysquared = y * y;
+
+            double r = Math.Sqrt(xsquared + ysquared);
+            return Convert.ToInt32(r);
         }
 
         public void InitializeCosts(Vertex<T> start)

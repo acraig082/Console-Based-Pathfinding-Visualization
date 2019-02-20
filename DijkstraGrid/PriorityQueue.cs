@@ -39,7 +39,7 @@ namespace DijkstraGrid
                     }
                 }
 
-            
+
 
             return null; // not supposed to reach here.
         }
