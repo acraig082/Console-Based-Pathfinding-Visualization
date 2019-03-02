@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DijkstraGrid
 {
-    class Vertex<T>
+    public class Vertex<T>
     {
         List<Vertex<T>> neighbors;
         List<WeightedEdge<T>> edges;

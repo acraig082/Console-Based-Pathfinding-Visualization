@@ -13,6 +13,13 @@ namespace DijkstraGrid
         public int _height;
         public int _rooms;
 
+        public (int, int) _start;
+        public (int, int) _end;
+
+        public List<Vertex<char>> _vertices = new List<Vertex<char>>();
+        public List<WeightedEdge<char>> _edges = new List<WeightedEdge<char>>();
+        public Dictionary<(int, int), Vertex<char>> _vertexDictionary = new Dictionary<(int, int), Vertex<char>>();
+
         public char[,] _map;
 
         Random rnd = new Random();
@@ -23,8 +30,14 @@ namespace DijkstraGrid
             _height = height;
             _rooms = rooms;
 
-            _map = new char[width, height];
+            _start = (0, 0);
+            _end = (width - 1, height - 1);
 
+            _map = new char[width, height];
+        }
+
+        public void InitializeLevel()
+        {
             for (int i = 0; i < _width; i++)
             {
                 for (int j = 0; j < _height; j++)
@@ -32,11 +45,9 @@ namespace DijkstraGrid
                     _map[i, j] = ' ';
                 }
             }
-
-            addRandomRooms();
         }
 
-        private void addRandomRooms()
+        public void AddRandomRooms()
         {
             int partitionWidth = _width / _rooms;
             int count = 1;
@@ -72,7 +83,7 @@ namespace DijkstraGrid
 
         }
 
-        public void displayLevel()
+        public void DisplayLevel()
         {
             for (int j = 0; j < _height; j++)
             {
@@ -84,6 +95,91 @@ namespace DijkstraGrid
             }
         }
 
+        public void AddVertices()
+        {
+            for (int j = 0; j < _height; j++)
+            {
+                for (int i = 0; i < _width; i++)
+                {
+                    if (_map[i, j] == ' ')
+                    {
+                        Vertex<char> tempV = new Vertex<char>(_map[i, j]);
+                        (int, int) l = (i, j);
+                        tempV.Location = l;
+                        _vertexDictionary.Add((i, j), tempV);
+                    }
+                }
+            }
+        }
+
+        public void AddNeighborsAndEdges()
+        {
+            for (int j = 0; j < _height; j++)
+            {
+                for (int i = 0; i < _width; i++)
+                {
+                    (int, int) temp = (i, j);
+
+                    Console.Write(_map[i, j]);
+
+                    if (_map[i, j] == ' ')
+                    {
+                        //left
+                        if (i - 1 >= 0 && _map[i - 1, j] == ' ')
+                        {
+                            (int, int) left = (i - 1, j);
+                            WeightedEdge<char> e = new WeightedEdge<char>(_vertexDictionary[temp], _vertexDictionary[left], 1);
+                            _edges.Add(e);
+                            _vertexDictionary[temp].AddEdge(e);
+
+
+                        }
+                        //right
+                        if (i + 1 < _width && _map[i + 1, j] == ' ')
+                        {
+                            (int, int) right = (i + 1, j);
+                            WeightedEdge<char> e = new WeightedEdge<char>(_vertexDictionary[temp], _vertexDictionary[right], 1);
+                            _edges.Add(e);
+                            _vertexDictionary[temp].AddEdge(e);
+                        }
+                        //down
+                        if (j - 1 >= 0 && _map[i, j - 1] == ' ')
+                        {
+                            (int, int) down = (i, j - 1);
+                            WeightedEdge<char> e = new WeightedEdge<char>(_vertexDictionary[temp], _vertexDictionary[down], 1);
+                            _edges.Add(e);
+                            _vertexDictionary[temp].AddEdge(e);
+                        }
+                        //up
+                        if (j + 1 < _height && _map[i, j + 1] == ' ')
+                        {
+                            (int, int) up = (i, j + 1);
+                            WeightedEdge<char> e = new WeightedEdge<char>(_vertexDictionary[temp], _vertexDictionary[up], 1);
+                            _edges.Add(e);
+                            _vertexDictionary[temp].AddEdge(e);
+                        }
+
+                        _vertices.Add(_vertexDictionary[temp]);
+
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public void FindPath()
+        {
+            string algorithm = "AStar";
+
+            WeightedGraph<char> graph = new WeightedGraph<char>(_vertices, _edges);
+            List<Vertex<char>> path = graph.Pathfinder(_vertexDictionary[_start], _vertexDictionary[_end], algorithm);
+
+            foreach (Vertex<char> v in path)
+            {
+                (int, int) l = v.Location;
+                _map[l.Item1, l.Item2] = '*';
+            }
+        }
 
     }
 }

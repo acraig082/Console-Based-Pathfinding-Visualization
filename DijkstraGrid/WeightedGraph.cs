@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DijkstraGrid
 {
-    class WeightedGraph<T>
+    public class WeightedGraph<T>
     {
         List<WeightedEdge<T>> edges;
         List<Vertex<T>> vertices;
@@ -159,7 +159,7 @@ namespace DijkstraGrid
             double r = Math.Sqrt(xsquared + ysquared);
             int distance = Convert.ToInt32(r);
 
-            distance += rnd.Next(-4, 4);
+            //distance *= rnd.Next(0,9);
             return distance;
         }
 

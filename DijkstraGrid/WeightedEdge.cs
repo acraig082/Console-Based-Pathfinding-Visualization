@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DijkstraGrid
 {
-    class WeightedEdge<T>
+    public class WeightedEdge<T>
     {
         int weight;
 
