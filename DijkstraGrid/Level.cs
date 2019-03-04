@@ -24,16 +24,16 @@ namespace DijkstraGrid
 
         Random rnd = new Random();
 
-        public Level(int width, int height, int rooms)
+        public Level(int width, int height, int rooms, char[,] map )
         {
             _width = width;
             _height = height;
             _rooms = rooms;
 
-            _start = (0, 0);
-            _end = (width - 1, height - 1);
+            _start = (1, 1);
+            _end = (width - 2, height - 2);
 
-            _map = new char[width, height];
+            _map = map;
         }
 
         public void InitializeLevel()
@@ -90,7 +90,19 @@ namespace DijkstraGrid
                 Console.Write("\n");
                 for (int i = 0; i < _width; i++)
                 {
-                    Console.Write(_map[i, j]);
+                    if (_map[i,j] == '*')
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.Write(_map[i, j]);
+                        Console.ForegroundColor = ConsoleColor.White;
+
+                    }
+                    else
+                    {
+                        Console.Write(_map[i, j]);
+                    }
+                    
+
                 }
             }
         }

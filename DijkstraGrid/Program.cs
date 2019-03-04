@@ -10,17 +10,10 @@ namespace DijkstraGrid
     {
         static void Main(string[] args)
         {
-            int width = 100;
-            int height = 20;
-            //int rooms = 4;
 
-            //Level level = new Level(width, height, rooms);
-            //level.InitializeLevel();
-            //level.AddRandomRooms();
-            //level.AddVertices();
-            //level.AddNeighborsAndEdges();
-            //level.FindPath();
-            //level.DisplayLevel();
+            int width = 30;
+            int height = 10;
+            int rooms = 4;
 
             Maze maze = new Maze(width, height);
             maze.InitializeMaze();
@@ -28,6 +21,15 @@ namespace DijkstraGrid
             maze.AddNeighborsAndEdges();
             maze.BuildMaze();
             maze.DisplayMaze();
+
+            Level level = new Level(width *3, height*3, rooms, maze.exportedMap);
+            //level.InitializeLevel();
+            //level.AddRandomRooms();
+            level.AddVertices();
+            level.AddNeighborsAndEdges();
+            level.FindPath();
+            level.DisplayLevel();
+
 
             Console.ReadKey();
 

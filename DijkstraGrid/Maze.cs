@@ -10,43 +10,24 @@ namespace DijkstraGrid
     {
 
         public class Grid { 
-            public char [,] map ={ { '+', ' ', ' ', ' ', '+' },
-                                   { ' ', ' ', ' ', ' ', ' ' },
-                                   { '+', ' ', ' ', ' ', '+' } };
+            public char [,] map ={ { '+', '+', '+' },
+                                   { '+', '+', '+' },
+                                   { '+', '+', '+' } };
         }
-
-        public char[,] up ={ { '+', '-', '-', '-', '+' },
-                             { '|', ' ', ' ', ' ', '|' },
-                             { '+', ' ', ' ', ' ', '+' } };
-
-        public char[,] down ={ { '+', ' ', ' ', ' ', '+' },
-                             { '|', ' ', ' ', ' ', '|' },
-                             { '+', '-', '-', '-', '+' } };
-
-        public char[,] left ={ { '+', '-', '-', '-', '+' },
-                             { ' ', ' ', ' ', ' ', '|' },
-                             { '+', '-', '-', '-', '+' } };
-
-        public char[,] right ={ { '+', '-', '-', '-', '+' },
-                             { '|', ' ', ' ', ' ', ' ' },
-                             { '+', '-', '-', '-', '+' } };
-
-
 
         public int _width;
         public int _height;
         public Stack<Vertex<Grid>> _path;
-        //Vertex<Grid> end;
-
-         
 
         public List<Vertex<Grid>> _vertices = new List<Vertex<Grid>>();
         public List<WeightedEdge<Grid>> _edges = new List<WeightedEdge<Grid>>();
         Dictionary<(int, int), Vertex<Grid>> _vertexDictionary = new Dictionary<(int, int), Vertex<Grid>>();
+        //Dictionary<Vertex<Grid>, Vertex<Grid>> parentMap = new Dictionary<Vertex<Grid>, Vertex<Grid>>();
 
         public Grid[,] _map;
+        public char[,] exportedMap;
 
-        Random rnd = new Random();
+        public static Random rnd = new Random();
 
         public Maze(int width, int height)
         {
@@ -54,6 +35,7 @@ namespace DijkstraGrid
             _height = height;
             _path = new Stack<Vertex<Grid>>();
             _map = new Grid[width, height];
+            exportedMap = new char[_width * 3, _height * 3];
         }
 
         public void InitializeMaze()
@@ -135,15 +117,22 @@ namespace DijkstraGrid
         public void BuildMaze()
         {
             WeightedGraph<Grid> graph = new WeightedGraph<Grid>(_vertices, _edges);
-            Dictionary<Vertex<Grid>, Vertex<Grid>> parentMap = new Dictionary<Vertex<Grid>, Vertex<Grid>>();
             Vertex<Grid> start = _vertexDictionary[(0,0)];
             start.IsVisited = true;
-            _path.Push(start);
-            int count = 0;
+            Vertex<Grid> current = start;
+            _map[start.Location.Item1, start.Location.Item2].map[0, 0] = ' ';
+            _map[start.Location.Item1, start.Location.Item2].map[1, 0] = ' ';
+            _map[start.Location.Item1, start.Location.Item2].map[0, 1] = ' ';
+            int count = 1;
+            Traverse(count, current);
+            //CarveOut();
 
-            while (count < (_width * _height))
+        }
+
+        public void Traverse(int count, Vertex<Grid> current)
+        {
+            while (count < _width * _height)
             {
-                Vertex<Grid> current = _path.Pop();
                 Stack<Vertex<Grid>> neighbors = new Stack<Vertex<Grid>>();
                 foreach (Vertex<Grid> v in current.Neighbors)
                 {
@@ -153,89 +142,141 @@ namespace DijkstraGrid
                     }
                 }
 
-                if (neighbors.Count == 0)
+                if (neighbors.Count != 0)
                 {
-                    break;
+                    Vertex<Grid>[] a = new Vertex<Grid>[neighbors.Count];
+                    while (neighbors.Count != 0)
+                    {
+                        a[neighbors.Count - 1] = neighbors.Pop();
+                    }
+
+                    // choose a random unvisited neighbor of current
+                    int random = rnd.Next(0, a.Length);
+                    Vertex<Grid> nextNeighbor;
+                    nextNeighbor = a[random];
+
+                    // Push the current cell to the stack
+                    _path.Push(current);
+
+                    // connect path
+                    //parentMap.Add(current, nextNeighbor);
+                    CarveOut(nextNeighbor, current);
+                    DisplayMaze();
+
+                    current = nextNeighbor;
+                    nextNeighbor.IsVisited = true;
+                    count++;
+
                 }
                 else
                 {
-                    // getting random neighbor
-                    int random = rnd.Next(1, neighbors.Count);
-                    Vertex<Grid> nextNeighbor;
-                    for (int i = 0; i < random - 1; i++)
-                    {
-                        nextNeighbor = neighbors.Pop();
-                    }
-                    //end = neighbors.Peek();
-                    nextNeighbor = neighbors.Pop();
-                    nextNeighbor.IsVisited = true;
-
-                    // connect path
-                    parentMap.Add(current, nextNeighbor);
-                    _path.Push(nextNeighbor);
-                    count++;
-
-                    while (neighbors.Count > 0)
-                    {
-                        neighbors.Pop();
-                    }
+                    current = _path.Pop();
                 }
-
+                //Traverse(count, current);
             }
 
-            
-            //List<Vertex<Grid>> path = graph.ReconstructPath(parentMap, start, end);
+            //_map[current.Location.Item1, current.Location.Item2].map[]
+        }
 
-            foreach (KeyValuePair<Vertex<Grid>, Vertex<Grid>> v in parentMap)
+        public void CarveOut(Vertex<Grid> nextNeighbor, Vertex<Grid> current)
+        {
+
+            // up
+            (int, int) l = current.Location;
+            if (current.Location.Item2 > nextNeighbor.Location.Item2)
             {
-                // up
-                (int, int) l = v.Key.Location;
-                if (v.Key.Location.Item2 > v.Value.Location.Item2)
-                {
-                    _map[l.Item1, l.Item2].map = up;
-                }
-                // down
-                else if(v.Key.Location.Item2 < v.Value.Location.Item2)
-                {
-                    _map[l.Item1, l.Item2].map = down;
-                }
-                // left
-                else if (v.Key.Location.Item1 > v.Value.Location.Item1)
-                {
-                    _map[l.Item1, l.Item2].map = left;
-                }
-                // right
-                else if (v.Key.Location.Item1 < v.Value.Location.Item1)
-                {
-                    _map[l.Item1, l.Item2].map = right;
-                }
-
+                _map[l.Item1, l.Item2].map[1, 1] = ' ';
+                _map[l.Item1, l.Item2].map[1, 0] = ' ';
+                l = nextNeighbor.Location;
+                _map[l.Item1, l.Item2].map[1, 1] = ' ';
+                _map[l.Item1, l.Item2].map[1, 2] = ' ';
+            }
+            // down
+            else if (current.Location.Item2 < nextNeighbor.Location.Item2)
+            {
+                _map[l.Item1, l.Item2].map[1, 1] = ' ';
+                _map[l.Item1, l.Item2].map[1, 2] = ' ';
+                l = nextNeighbor.Location;
+                _map[l.Item1, l.Item2].map[1, 1] = ' ';
+                _map[l.Item1, l.Item2].map[1, 0] = ' ';
+            }
+            // left
+            else if (current.Location.Item1 > nextNeighbor.Location.Item1)
+            {
+                _map[l.Item1, l.Item2].map[1, 1] = ' ';
+                _map[l.Item1, l.Item2].map[0, 1] = ' ';
+                l = nextNeighbor.Location;
+                _map[l.Item1, l.Item2].map[1, 1] = ' ';
+                _map[l.Item1, l.Item2].map[2, 1] = ' ';
+            }
+            // right
+            else if (current.Location.Item1 < nextNeighbor.Location.Item1)
+            {
+                _map[l.Item1, l.Item2].map[1, 1] = ' ';
+                _map[l.Item1, l.Item2].map[2, 1] = ' ';
+                l = nextNeighbor.Location;
+                _map[l.Item1, l.Item2].map[1, 1] = ' ';
+                _map[l.Item1, l.Item2].map[0, 1] = ' ';
             }
 
+            //foreach (KeyValuePair<Vertex<Grid>, Vertex<Grid>> v in parentMap)
+            //{
+            //    // up
+            //    (int, int) l = v.Key.Location;
+            //    if (v.Key.Location.Item2 > v.Value.Location.Item2)
+            //    {
+            //        _map[l.Item1, l.Item2].map[1, 1] = ' ';
+            //        _map[l.Item1, l.Item2].map[1, 0] = ' ';
+            //        l = v.Value.Location;
+            //        _map[l.Item1, l.Item2].map[1, 1] = ' ';
+            //        _map[l.Item1, l.Item2].map[1, 2] = ' ';
+            //    }
+            //    // down
+            //    else if (v.Key.Location.Item2 < v.Value.Location.Item2)
+            //    {
+            //        _map[l.Item1, l.Item2].map[1, 1] = ' ';
+            //        _map[l.Item1, l.Item2].map[1, 2] = ' ';
+            //        l = v.Value.Location;
+            //        _map[l.Item1, l.Item2].map[1, 1] = ' ';
+            //        _map[l.Item1, l.Item2].map[1, 0] = ' ';
+            //    }
+            //    // left
+            //    else if (v.Key.Location.Item1 > v.Value.Location.Item1)
+            //    {
+            //        _map[l.Item1, l.Item2].map[1, 1] = ' ';
+            //        _map[l.Item1, l.Item2].map[0, 1] = ' ';
+            //        l = v.Value.Location;
+            //        _map[l.Item1, l.Item2].map[1, 1] = ' ';
+            //        _map[l.Item1, l.Item2].map[2, 1] = ' ';
+            //    }
+            //    // right
+            //    else if (v.Key.Location.Item1 < v.Value.Location.Item1)
+            //    {
+            //        _map[l.Item1, l.Item2].map[1, 1] = ' ';
+            //        _map[l.Item1, l.Item2].map[2, 1] = ' ';
+            //        l = v.Value.Location;
+            //        _map[l.Item1, l.Item2].map[1, 1] = ' ';
+            //        _map[l.Item1, l.Item2].map[0, 1] = ' ';
+            //    }
+
+            //}
         }
 
         public void DisplayMaze()
         {
             for (int j = 0; j < _height; j++)
             {
-                Console.Write("\n");
                 for (int i = 0; i < _width; i++)
                 {
-                    DisplayGrid(_map[i, j]);
-                    Console.SetCursorPosition(i * 5, Console.CursorTop - j * 3);
-                    
-                }
-            }
-        }
-
-        public void DisplayGrid(Grid g)
-        {
-            for (int h = 0; h < 3; h++)
-            {
-                Console.Write("\n");
-                for (int k = 0; k < 5; k++)
-                {
-                    Console.Write(g.map[h,k]);
+                    for (int h = 0; h < 3; h++)
+                    {
+                        for (int k = 0; k < 3; k++)
+                        {
+                            Console.SetCursorPosition(i * 3 + 1 + k, j * 3 + h + 1);
+                            exportedMap[i * 3 + k, j * 3 + h] = _map[i, j].map[k, h];
+                            Console.Write(_map[i, j].map[k,h]);
+                        }
+                    }
                 }
             }
         }
