@@ -38,15 +38,15 @@ namespace DijkstraGrid
             {
                 do
                 {
-                    Console.WriteLine("\nHow wide would you like the maze to be?(4 - 60):");
+                    Console.WriteLine("\nHow wide would you like the maze to be?(4 - 30):");
                     width = Convert.ToInt32(Console.ReadLine());
-                } while (width < 4 || width > 60);
+                } while (width < 4 || width > 30);
 
                 do
                 {
-                    Console.WriteLine("\nHow tall would you like the maze to be?(4 - 60):");
+                    Console.WriteLine("\nHow tall would you like the maze to be?(4 - 10):");
                     height = Convert.ToInt32(Console.ReadLine());
-                } while (height < 4 || height > 60);
+                } while (height < 4 || height > 10);
 
                 rooms = 0;
 
@@ -76,15 +76,15 @@ namespace DijkstraGrid
             {
                 do
                 {
-                    Console.WriteLine("\nHow wide would you like the level to be?(4 - 60):");
+                    Console.WriteLine("\nHow wide would you like the level to be?(4 - 40):");
                     width = Convert.ToInt32(Console.ReadLine());
-                } while (width < 4 || width > 60);
+                } while (width < 4 || width > 40);
 
                 do
                 {
-                    Console.WriteLine("\nHow tall would you like the level to be?(4 - 60):");
+                    Console.WriteLine("\nHow tall would you like the level to be?(4 - 15):");
                     height = Convert.ToInt32(Console.ReadLine());
-                } while (height < 4 || height > 60);
+                } while (height < 4 || height > 15);
 
                 do
                 {
