@@ -36,6 +36,19 @@ namespace DijkstraGrid
             _map = map;
         }
 
+        public Level(int width, int height, int rooms)
+        {
+            _width = width;
+            _height = height;
+            _rooms = rooms;
+
+            _start = (1, 1);
+            _end = (width - 2, height - 2);
+
+            _map = new char[width, height];
+
+        }
+
         public void InitializeLevel()
         {
             for (int i = 0; i < _width; i++)
